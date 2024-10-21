@@ -7,6 +7,8 @@ This project was originally designed as a keypad entry system for my garage door
 ## How it works
 When the user enters a code on the keypad, the numerical code and the control key (Up, Down, or Stop) are sent as an encrypted message to the receiver. The receiver decrypts the message and determines if the code is correct. It responds with the authorisation status and the number of attempts remaining. If too many unauthorised attempts are made the Receiver locks-out the system.
 
+## How it works
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -17,15 +19,21 @@ sequenceDiagram
     Keypad->>Keypad: Encrypt message
     Keypad->>Receiver: Send encrypted message
     Receiver->>Receiver: Decrypt message
-    Receiver->>Receiver: Check authorization
-    alt Authorized
-        Receiver->>Keypad: Send authorization status
-        Receiver->>Receiver: Execute command
-    else Unauthorized
-        Receiver->>Keypad: Send status + remaining attempts
-        alt Too many attempts
-            Receiver->>Receiver: Lock out system
+    
+    alt UP command
+        Receiver->>Receiver: Check authorization
+        alt Authorized
+            Receiver->>Keypad: Send authorization status
+            Receiver->>Receiver: Execute UP command
+        else Unauthorized
+            Receiver->>Keypad: Send status + remaining attempts
+            alt Too many attempts
+                Receiver->>Receiver: Lock out system
+            end
         end
+    else DOWN or STOP command
+        Receiver->>Receiver: Execute command without authorization
+        Receiver->>Keypad: Send execution status
     end
 ```
 
